@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DetailPopup from "@/components/DetailPopup";
+import ReactPaginate from "react-paginate";
 
 export interface Item {
   id: number;
@@ -49,6 +50,10 @@ export default function ListPage() {
 
   const totalPages = Math.ceil(SAMPLE_DATA.length / PAGE_SIZE);
   const pagedData = SAMPLE_DATA.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const handlePageChange = ({ selected }: { selected: number }) => {
+    setCurrentPage(selected + 1); // react-paginate는 0부터 시작
+  };
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -126,49 +131,28 @@ export default function ListPage() {
         </div>
 
         {/* 페이징 */}
-        <div className="mt-6 flex items-center justify-center gap-1">
-          <button
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            «
-          </button>
-          <button
-            onClick={() => setCurrentPage((p) => p - 1)}
-            disabled={currentPage === 1}
-            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            ‹
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                page === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage((p) => p + 1)}
-            disabled={currentPage === totalPages}
-            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            ›
-          </button>
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            »
-          </button>
-        </div>
+        <ReactPaginate
+          pageCount={totalPages}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={1}
+          onPageChange={handlePageChange}
+          forcePage={currentPage - 1}
+          previousLabel="‹"
+          nextLabel="›"
+          breakLabel="..."
+          containerClassName="mt-6 flex items-center justify-center gap-1"
+          pageClassName="rounded-lg"
+          pageLinkClassName="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600 hover:bg-gray-200"
+          activeClassName="!bg-blue-500"
+          activeLinkClassName="!text-white"
+          previousClassName="rounded-lg"
+          previousLinkClassName="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600 hover:bg-gray-200 disabled:opacity-40"
+          nextClassName="rounded-lg"
+          nextLinkClassName="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600 hover:bg-gray-200 disabled:opacity-40"
+          breakClassName="rounded-lg"
+          breakLinkClassName="flex h-9 w-9 items-center justify-center rounded-lg text-sm text-gray-600"
+          disabledClassName="opacity-40 cursor-not-allowed"
+        />
       </div>
 
       {/* 상세 팝업 */}
