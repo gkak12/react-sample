@@ -26,11 +26,29 @@ const SAMPLE_DATA: Item[] = [
   { id: 6, name: "한지아", email: "jia@example.com", department: "마케팅팀", role: "마케터", joinDate: "2023-02-14", status: "재직", phone: "010-6789-0123", address: "서울시 중구", memo: "SNS 마케팅 담당" },
   { id: 7, name: "오준서", email: "junsu@example.com", department: "개발팀", role: "DevOps 엔지니어", joinDate: "2020-09-01", status: "휴직", phone: "010-7890-1234", address: "인천시 남동구", memo: "AWS, Docker 담당" },
   { id: 8, name: "윤채원", email: "chaewon@example.com", department: "인사팀", role: "HR 매니저", joinDate: "2017-04-03", status: "재직", phone: "010-8901-2345", address: "서울시 강서구", memo: "채용 및 복지 담당" },
+  { id: 9, name: "임현우", email: "hyunwoo@example.com", department: "개발팀", role: "모바일 개발자", joinDate: "2022-06-01", status: "재직", phone: "010-9012-3456", address: "서울시 노원구", memo: "Flutter 담당" },
+  { id: 10, name: "송지우", email: "jiwoo@example.com", department: "디자인팀", role: "그래픽 디자이너", joinDate: "2021-08-15", status: "재직", phone: "010-0123-4567", address: "경기도 수원시", memo: "브랜드 디자인 담당" },
+  { id: 11, name: "강태양", email: "taeyang@example.com", department: "개발팀", role: "데이터 엔지니어", joinDate: "2019-03-11", status: "재직", phone: "010-1111-2222", address: "서울시 동작구", memo: "Spark, Hadoop 담당" },
+  { id: 12, name: "조나은", email: "naeun@example.com", department: "기획팀", role: "PM", joinDate: "2020-12-01", status: "재직", phone: "010-2222-3333", address: "서울시 서초구", memo: "프로젝트 전반 관리" },
+  { id: 13, name: "백승호", email: "seungho@example.com", department: "개발팀", role: "보안 엔지니어", joinDate: "2018-09-20", status: "재직", phone: "010-3333-4444", address: "경기도 고양시", memo: "보안 취약점 분석 담당" },
+  { id: 14, name: "전미래", email: "mirae@example.com", department: "마케팅팀", role: "콘텐츠 마케터", joinDate: "2023-04-05", status: "재직", phone: "010-4444-5555", address: "서울시 은평구", memo: "블로그, 영상 콘텐츠 담당" },
+  { id: 15, name: "류준혁", email: "junhyuk@example.com", department: "인사팀", role: "교육 담당자", joinDate: "2021-01-18", status: "휴직", phone: "010-5555-6666", address: "인천시 부평구", memo: "사내 교육 프로그램 운영" },
+  { id: 16, name: "신다인", email: "dain@example.com", department: "디자인팀", role: "영상 편집자", joinDate: "2022-10-03", status: "재직", phone: "010-6666-7777", address: "서울시 양천구", memo: "홍보 영상 편집 담당" },
+  { id: 17, name: "문성준", email: "sungjun@example.com", department: "개발팀", role: "QA 엔지니어", joinDate: "2020-05-22", status: "재직", phone: "010-7777-8888", address: "경기도 부천시", memo: "테스트 자동화 담당" },
+  { id: 18, name: "황소희", email: "sohee@example.com", department: "기획팀", role: "데이터 분석가", joinDate: "2019-07-14", status: "재직", phone: "010-8888-9999", address: "서울시 광진구", memo: "사용자 데이터 분석 담당" },
+  { id: 19, name: "노재원", email: "jaewon@example.com", department: "마케팅팀", role: "광고 기획자", joinDate: "2023-08-01", status: "재직", phone: "010-9999-0000", address: "서울시 성동구", memo: "온라인 광고 집행 담당" },
+  { id: 20, name: "석유진", email: "yujin@example.com", department: "인사팀", role: "총무 담당자", joinDate: "2016-02-29", status: "재직", phone: "010-0000-1111", address: "서울시 강북구", memo: "사무용품 및 시설 관리" },
 ];
+
+const PAGE_SIZE = 5;
 
 export default function ListPage() {
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(SAMPLE_DATA.length / PAGE_SIZE);
+  const pagedData = SAMPLE_DATA.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -78,7 +96,7 @@ export default function ListPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {SAMPLE_DATA.map((item) => (
+              {pagedData.map((item) => (
                 <tr
                   key={item.id}
                   onDoubleClick={() => setSelectedItem(item)}
@@ -105,6 +123,51 @@ export default function ListPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* 페이징 */}
+        <div className="mt-6 flex items-center justify-center gap-1">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            «
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => p - 1)}
+            disabled={currentPage === 1}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            ‹
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`rounded-lg px-3 py-2 text-sm font-medium ${
+                page === currentPage
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage((p) => p + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            ›
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            »
+          </button>
         </div>
       </div>
 
