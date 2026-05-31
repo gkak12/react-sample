@@ -73,12 +73,20 @@ export default function ListPage() {
         {/* 헤더 */}
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">직원 목록</h1>
-          <button
-            onClick={handleLogout}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-50"
-          >
-            로그아웃
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => router.push("/map")}
+              className="rounded-lg bg-blue-500 px-4 py-2 text-sm text-white transition hover:bg-blue-600"
+            >
+              🗺 지도 보기
+            </button>
+            <button
+              onClick={handleLogout}
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-50"
+            >
+              로그아웃
+            </button>
+          </div>
         </div>
 
         {/* 안내 문구 */}
