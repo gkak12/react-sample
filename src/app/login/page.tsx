@@ -81,7 +81,7 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3">
           {/* 구글 로그인 */}
           <button
-            onClick={() => signIn("google", { callbackUrl: "/list" })}
+            onClick={() => window.location.href = "http://localhost:8080/login/oauth2/authorization/google?client_type=WEB"}
             className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
           >
             <svg width="18" height="18" viewBox="0 0 18 18">
@@ -95,7 +95,7 @@ export default function LoginPage() {
 
           {/* 네이버 로그인 */}
           <button
-            onClick={() => signIn("naver", { callbackUrl: "/list" })}
+            onClick={() => window.location.href = "http://localhost:8080/login/oauth2/authorization/naver?client_type=WEB"}
             className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#03C75A] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#02b351]"
           >
             <span className="text-base font-bold leading-none">N</span>
