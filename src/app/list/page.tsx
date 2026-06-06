@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import DetailPopup from "@/components/DetailPopup";
 import ReactPaginate from "react-paginate";
 
@@ -45,8 +46,10 @@ const PAGE_SIZE = 5;
 
 export default function ListPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [userId, setUserId] = useState("");
 
   const totalPages = Math.ceil(SAMPLE_DATA.length / PAGE_SIZE);
   const pagedData = SAMPLE_DATA.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -57,14 +60,25 @@ export default function ListPage() {
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !session) {
       router.replace("/login");
     }
-  }, [router]);
+    // 일반 로그인: localStorage에서 userId 가져오기
+    const storedId = localStorage.getItem("userId");
+    if (storedId) setUserId(storedId);
+  }, [router, session]);
+
+  // 소셜 로그인: session에서 사용자 이름 가져오기
+  const displayName = session?.user?.name ?? session?.user?.email ?? userId;
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    router.push("/login");
+    localStorage.removeItem("userId");
+    if (session) {
+      signOut({ callbackUrl: "/login" });
+    } else {
+      router.push("/login");
+    }
   };
 
   return (
@@ -73,6 +87,12 @@ export default function ListPage() {
         {/* 헤더 */}
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">직원 목록</h1>
+          <div className="flex items-center gap-3">
+            {displayName && (
+              <span className="text-sm text-gray-500">
+                👤 <span className="font-medium text-gray-700">{displayName}</span>
+              </span>
+            )}
           <div className="flex gap-2">
             <button
               onClick={() => router.push("/map")}
@@ -86,6 +106,7 @@ export default function ListPage() {
             >
               로그아웃
             </button>
+          </div>
           </div>
         </div>
 
