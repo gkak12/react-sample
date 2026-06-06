@@ -1,25 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (id === "admin" && password === "1234") {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userId", id);
-      router.push("/list");
-    } else {
+    const result = await signIn("credentials", {
+      id,
+      password,
+      callbackUrl: "/list",
+      redirect: false,
+    });
+
+    if (result?.error) {
       setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+    } else {
+      window.location.href = "/list";
     }
   };
 

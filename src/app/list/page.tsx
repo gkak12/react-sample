@@ -46,39 +46,27 @@ const PAGE_SIZE = 5;
 
 export default function ListPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [userId, setUserId] = useState("");
 
   const totalPages = Math.ceil(SAMPLE_DATA.length / PAGE_SIZE);
   const pagedData = SAMPLE_DATA.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handlePageChange = ({ selected }: { selected: number }) => {
-    setCurrentPage(selected + 1); // react-paginate는 0부터 시작
+    setCurrentPage(selected + 1);
   };
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn && !session) {
+    if (status === "unauthenticated") {
       router.replace("/login");
     }
-    // 일반 로그인: localStorage에서 userId 가져오기
-    const storedId = localStorage.getItem("userId");
-    if (storedId) setUserId(storedId);
-  }, [router, session]);
+  }, [status, router]);
 
-  // 소셜 로그인: session에서 사용자 이름 가져오기
-  const displayName = session?.user?.name ?? session?.user?.email ?? userId;
+  const displayName = session?.user?.name ?? session?.user?.email;
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userId");
-    if (session) {
-      signOut({ callbackUrl: "/login" });
-    } else {
-      router.push("/login");
-    }
+    signOut({ callbackUrl: "/login" });
   };
 
   return (

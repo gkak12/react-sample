@@ -1,8 +1,26 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // 일반 로그인
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        id: { label: "아이디" },
+        password: { label: "비밀번호" },
+      },
+      async authorize(credentials) {
+        // 실제 서비스에서는 여기서 백엔드 API로 인증 처리
+        // ex) const res = await fetch("http://백엔드주소/api/login", { ... })
+        if (credentials?.id === "admin" && credentials?.password === "1234") {
+          return { id: "1", name: credentials.id };
+        }
+        return null;
+      },
+    }),
+
     // 구글 로그인
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,11 +49,10 @@ export const authOptions: NextAuthOptions = {
   ],
 
   pages: {
-    signIn: "/login", // 커스텀 로그인 페이지
+    signIn: "/login",
   },
 
   callbacks: {
-    // 로그인 후 세션에 사용자 정보 추가
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
